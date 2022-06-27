@@ -32,12 +32,14 @@ public class SecurityConfiguration {
                 .csrf().disable()
                 .authorizeRequests(authz -> {
                     authz
-                            .antMatchers(HttpMethod.POST, "/api/v1/register", "/api/v1/authz/login", "/api/v1/authz/logout").permitAll()
+                            .antMatchers(
+                                    HttpMethod.POST,
+                                    "/api/v1/register",
+                                    "/api/v1/authz/login",
+                                    "/api/v1/authz/logout").permitAll()
                             .anyRequest().authenticated();
                 })
                 .httpBasic(t -> {});
-
-
         return http.build();
     }
 

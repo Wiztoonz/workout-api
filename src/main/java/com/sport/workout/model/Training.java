@@ -32,10 +32,15 @@ public class Training {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "user_id")
     private User user;
     @ManyToMany(mappedBy = "trainings")
     private List<Exercise> exercises = new ArrayList<>();
+
+    public void addUser(User user) {
+        this.user = user;
+        user.getTrainings().add(this);
+    }
 
 }
