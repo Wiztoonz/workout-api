@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@ToString(exclude = "trainings")
-@EqualsAndHashCode(exclude = "trainings")
+@ToString(exclude = {"trainings", "userRoles"})
+@EqualsAndHashCode(exclude = {"trainings", "userRoles"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -28,12 +28,16 @@ public class User {
     private String email;
     @Column(name = "password")
     private String password;
-    @Column(name = "deviceId")
+    @Column(name = "device_id")
     private String deviceId;
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user")
+    private List<UserRole> userRoles = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "user")

@@ -35,8 +35,8 @@ public class SecurityConfiguration {
                             .antMatchers(
                                     HttpMethod.POST,
                                     "/api/v1/register",
-                                    "/api/v1/authz/login",
-                                    "/api/v1/authz/logout").permitAll()
+                                    "/api/v1/auths/login",
+                                    "/api/v1/auths/logout").permitAll()
                             .anyRequest().authenticated();
                 })
                 .httpBasic(t -> {});

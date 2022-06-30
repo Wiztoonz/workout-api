@@ -1,6 +1,6 @@
 package com.sport.workout.controller;
 
-import com.sport.workout.model.User;
+import com.sport.workout.dto.UserDto;
 import com.sport.workout.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,8 +20,8 @@ public class RegisterRestControllerV1 {
     }
 
     @PostMapping
-    public void register(@RequestBody User user) {
-        userService.registerUser(user);
+    public void register(@RequestBody UserDto user) {
+        userService.registerUser(user.getUser());
     }
 
 }

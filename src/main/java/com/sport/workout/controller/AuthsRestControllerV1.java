@@ -5,6 +5,7 @@ import com.sport.workout.model.User;
 import com.sport.workout.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,16 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/authz")
-public class AuthzRestControllerV1 {
+@RequestMapping("/api/v1/auths")
+public class AuthsRestControllerV1 {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AuthzRestControllerV1(UserService userService, PasswordEncoder passwordEncoder) {
+    public AuthsRestControllerV1(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -35,7 +37,8 @@ public class AuthzRestControllerV1 {
         String email = authz.getEmail();
         User user = userService.findUser(email).orElseThrow(() -> new UsernameNotFoundException("User with " + email + " not found."));
         if (email.equalsIgnoreCase(user.getEmail()) && passwordEncoder.matches(authz.getPassword(), user.getPassword())) {
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), null);
+            List<SimpleGrantedAuthority> authorities = user.getUserRoles().stream().map(userRole -> new SimpleGrantedAuthority(userRole.getRole().getRoleName().name())).toList();
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword(), authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
             throw  new UsernameNotFoundException("User with " + email + " not found.");

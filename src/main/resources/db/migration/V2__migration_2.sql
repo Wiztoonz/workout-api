@@ -1,0 +1,12 @@
+CREATE TABLE role (
+  id BIGSERIAL NOT NULL PRIMARY KEY,
+  role VARCHAR(120) NOT NULL DEFAULT 'USER'
+);
+
+CREATE TABLE users_role (
+    id BIGSERIAL NOT NULL,
+    role_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    FOREIGN KEY (role_id) REFERENCES role (id),
+    FOREIGN KEY (user_id) REFERENCES users (id)
+)
