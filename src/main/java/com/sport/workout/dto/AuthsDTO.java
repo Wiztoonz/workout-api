@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder
-public class AuthzDTO {
+public class AuthsDTO {
 
     private String email;
     private String password;
