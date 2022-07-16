@@ -1,6 +1,6 @@
 package com.sport.workout.configuration.security;
 
-import com.sport.workout.configuration.security.jwt.AuthEntryPointJwt;
+import com.sport.workout.configuration.security.jwt.CustomAuthenticationEntryPoint;
 import com.sport.workout.configuration.security.jwt.AuthTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -26,12 +26,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
     private final UserDetailsService userDetailsService;
-    private final AuthEntryPointJwt authEntryPointJwt;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Autowired
-    public SecurityConfiguration(UserDetailsService userDetailsService, AuthEntryPointJwt authEntryPointJwt) {
+    public SecurityConfiguration(UserDetailsService userDetailsService, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
         this.userDetailsService = userDetailsService;
-        this.authEntryPointJwt = authEntryPointJwt;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
     @Bean
@@ -39,15 +39,14 @@ public class SecurityConfiguration {
         http
                 .csrf().disable()
                 .addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
+                .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests(auth -> {
                     auth
                             .antMatchers(
                                     HttpMethod.POST,
-                                    "/api/v1/register",
-                                    "/api/v1/auths/login",
-                                    "/api/v1/auths/logout").permitAll()
+                                    "/api/v1/auth/register",
+                                    "/api/v1/auth/login").permitAll()
                             .anyRequest().authenticated();
                 });
 

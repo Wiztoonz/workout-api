@@ -1,11 +1,15 @@
 package com.sport.workout.service.impl;
 
 import com.sport.workout.dto.*;
+import com.sport.workout.exseption.UserNotFoundException;
 import com.sport.workout.model.*;
-import com.sport.workout.service.*;
+import com.sport.workout.repository.UserRepository;
+import com.sport.workout.service.ApproachService;
+import com.sport.workout.service.ExerciseService;
+import com.sport.workout.service.TrainingService;
+import com.sport.workout.service.WorkoutService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,22 +23,25 @@ import java.util.stream.Collectors;
 @Service
 public class WorkoutServiceImpl implements WorkoutService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final TrainingService trainingService;
     private final ExerciseService exerciseService;
     private final ApproachService approachService;
 
-    public WorkoutServiceImpl(UserService userService, TrainingService trainingService, ExerciseService exerciseService, ApproachService approachService) {
-        this.userService = userService;
+    public WorkoutServiceImpl(UserRepository userRepository,
+                              TrainingService trainingService,
+                              ExerciseService exerciseService,
+                              ApproachService approachService) {
+        this.userRepository = userRepository;
         this.trainingService = trainingService;
         this.exerciseService = exerciseService;
         this.approachService = approachService;
     }
 
     @Override
-    public ResponseEntity<?> start(String principal) {
-        User user = userService.findUser(principal).orElseThrow(() -> new UsernameNotFoundException(String.format("User with email: %s is not found.", principal)));
-        Training training = trainingService.findUserTraining(principal, Status.START);
+    public ResponseEntity<?> start(String email) {
+        User user = userRepository.findUser(email).orElseThrow(() -> new UserNotFoundException(String.format("User with email: %s is not found!", email)));
+        Training training = trainingService.findUserTraining(email, Status.START);
         Map<Object, Object> response = new HashMap<>();
         if (training != null && training.getStatus().equals(Status.START)) {
             response.put("message", "You already started training, finish to start");

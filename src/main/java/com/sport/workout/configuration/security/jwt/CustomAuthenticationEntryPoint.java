@@ -1,6 +1,7 @@
 package com.sport.workout.configuration.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -14,21 +15,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class AuthEntryPointJwt implements AuthenticationEntryPoint {
+public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        Map<String, Object> invalidAuthenticationResponse = invalidAuthenticationResponse(authException, request);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(response.getOutputStream(), invalidAuthenticationResponse);
+    }
 
-        final Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("status", HttpServletResponse.SC_UNAUTHORIZED);
-        responseBody.put("error", "UNAUTHORIZED");
-        responseBody.put("message", authException.getMessage());
-        responseBody.put("path", request.getServletPath());
-
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(response.getOutputStream(), responseBody);
+    public Map<String, Object> invalidAuthenticationResponse(AuthenticationException authException, HttpServletRequest request) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", authException.getMessage());
+        response.put("status", HttpStatus.UNAUTHORIZED);
+        response.put("path", request.getServletPath());
+        return response;
     }
 
 }
