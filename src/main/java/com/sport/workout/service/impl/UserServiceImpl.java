@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Optional<User> registerUser(User user) {
+    public User registerUser(User user) {
         User persistedUser;
         Role role = Optional.ofNullable(roleRepository.findRole(RoleName.USER)).orElseThrow(() -> new RoleNotFoundException("Role not found!"));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyExistsException(String.format("User with email: %s already exists!", user.getEmail()));
         }
         userRoleService.saveUserRole(user, role);
-        return Optional.of(persistedUser);
+        return persistedUser;
     }
 
     @Override
